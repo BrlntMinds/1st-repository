@@ -1,26 +1,26 @@
 #include <MeAuriga.h>
 #include <Pixy2.h>
 
-//-------------------motores-------------------------------
-MeEncoderOnBoard Encoder_1 (SLOT1); //motor de movimiento
-Servo servo_6_1; //motor de dirección - centro = 95
+//-------------------motors-------------------------------
+MeEncoderOnBoard Encoder_1 (SLOT1); //power motor
+Servo servo_6_1; //steering motor - center = 95
 MePort port_6(6);
 
-//-------------------sensores------------------------------
-MeUltrasonicSensor ultrasonic_7(7); // izquierda
-MeUltrasonicSensor ultrasonic_8(8); // derecha
-MeUltrasonicSensor ultrasonic_9(9); // adelante
-Pixy2 pixy; //cámara
+//-------------------sensors------------------------------
+MeUltrasonicSensor ultrasonic_7(7); // left
+MeUltrasonicSensor ultrasonic_8(8); // right 
+MeUltrasonicSensor ultrasonic_9(9); // front
+Pixy2 pixy; //camera
 
 //----------------------led--------------------------------
 MeRGBLed rgbled_0(0, 12);
 
-int carril = 0; //variable que define el carril
-int direccion = 0; //variable que define la dirección
+int carril = 0; //variable that defines lane
+int direccion = 0; //variable that defines steering
 //porcentaje motor: x*100/255=%
-int velocidadA = -190; //definir velocidad de manejo (75%)
-int velocidad = -175; //definir velocidad de manejo  (68%)
-int velocidadF = -30; //definir velocidad de manejo  (12%)
+int velocidadA = -190; //define driving speed (75%)
+int velocidad = -175; //define driving speed  (68%)
+int velocidadF = -30; //define driving speed   (12%)
 int count = 0;
 unsigned long previousMillis = 0;
 const unsigned long interval = 1000; 
@@ -42,53 +42,53 @@ void loop() {
   int centro;
   int der_01, der_02, der_03;
 
-//------------------------------en cuál carril está------------------------------------
-  if (carril == 0) {
+//------------------------------in which lane is ------------------------------------
+  if (lane == 0) {
 
-    int distance = ultrasonic_8.distanceCm(); //distancia a la derecha
+    int distance = ultrasonic_8.distanceCm(); //right distance
 
     Serial.print("Distance: ");
     Serial.print(distance);
     Serial.println(" cm");
 
-    if (distance > 0 && distance <= 40)       { carril = 1; }
-    else if (distance > 40 && distance <= 60) { carril = 2; }      
-    else if (distance > 60)                   { carril = 3; }
+    if (distance > 0 && distance <= 40)       { lane = 1; }
+    else if (distance > 40 && distance <= 60) { lane = 2; }      
+    else if (distance > 60)                   { lane = 3; }
 
   }
 
-//----------------------hacia qué dirección va--------------------
+//----------------------in what direction it is going--------------------
   if (direccion == 0) {
     servo_6_1.write(95);
     Encoder_1.setTarPWM(velocidad);
     Encoder_1.loop();
 
-    int dd = ultrasonic_8.distanceCm(); //distancia a la derecha
-    int di = ultrasonic_7.distanceCm(); //distancia a la izquierda
+    int dd = ultrasonic_8.distanceCm(); //right distance
+    int di = ultrasonic_7.distanceCm(); //left distancd 
 
-    if (dd >= 95 ) { direccion = 1; } //sentido horario
-    else if (di >= 95) { direccion = 2; } //sentido antihorario
+    if (dd >= 95 ) { direccion = 1; } //clockwise
+    else if (di >= 95) { direccion = 2; } //counterclockwise
     
-    // Cantidad de Giro
+    // amount of turn
     giro_01 = 10;
     giro_02 = 15;
     giro_03 = 27;
 
-    // Posicion de Centro
+    // center position
     centro = 95;
 
-    // Cantidad de Giro a la Izquierda
+    // amount of left turn 
     izq_01 = centro - giro_01;
     izq_02 = izq_01 - giro_02;
     izq_03 = izq_02 - giro_03;
 
-    // Cantidad de Giro a la Derecha
+    // amount of right turn
     der_01 = centro + giro_01;
     der_02 = der_01 + giro_02;
     der_03 = der_02 + giro_03;
   }
 
-//-------------------va en sentido horario------------
+//-------------------clockwise------------
   if (direccion == 1) {
 
     if      (count == 1) {
@@ -187,7 +187,7 @@ void loop() {
       }
       rgbled_0.show();
 
-    if (carril == 1){
+    if (lane == 1){
       
       if (count >= 13) {
         Encoder_1.setTarPWM(0);
@@ -231,7 +231,7 @@ void loop() {
 
     }
 
-    if (carril == 2) {
+    if (lane == 2) {
       Encoder_1.setTarPWM(velocidad);
       Encoder_1.loop();
 
@@ -243,7 +243,7 @@ void loop() {
       carril = 1;
     }
 
-    if (carril == 3) {
+    if (lane == 3) {
       Encoder_1.setTarPWM(velocidad);
       Encoder_1.loop();
 
@@ -257,7 +257,7 @@ void loop() {
 
   }
 
-//---------------va en sentido antihorario------------
+//---------------counterclockwise------------
   if (direccion == 2) {
 
     if      (count == 1) {
@@ -356,7 +356,7 @@ void loop() {
       }
       rgbled_0.show();
 
-    if (carril == 1) {
+    if (lane == 1) {
       Encoder_1.setTarPWM(velocidad);
       Encoder_1.loop();
 
@@ -368,7 +368,7 @@ void loop() {
       carril = 3;
     }
 
-    if (carril == 3) {
+    if (lane == 3) {
 
       if (count >= 13) {
         Encoder_1.setTarPWM(0);
@@ -376,13 +376,13 @@ void loop() {
       } else {
 
           int dist = ultrasonic_7.distanceCm();
-          // Carril 1: -----------------------------------
+          // lane 1: -----------------------------------
           if      (dist <= 10)  { servo_6_1.write(der_03); Encoder_1.setTarPWM(velocidad); Encoder_1.loop(); }
           else if (dist <= 20) { servo_6_1.write(der_02); Encoder_1.setTarPWM(velocidad); Encoder_1.loop(); } 
           else if (dist <= 25) { servo_6_1.write(der_01); Encoder_1.setTarPWM(velocidadA); Encoder_1.loop();}
-          // Carril 2: -----------------------------------
+          // lane 2: -----------------------------------
           else if (dist <= 28) { servo_6_1.write(centro); Encoder_1.setTarPWM(velocidadA); Encoder_1.loop();}
-          // Carril 3: -----------------------------------
+          // lane 3: -----------------------------------
           else if (dist <= 33) { servo_6_1.write(izq_01); Encoder_1.setTarPWM(velocidadA); Encoder_1.loop();}
           else if (dist <= 36) { servo_6_1.write(izq_02); Encoder_1.setTarPWM(velocidad); Encoder_1.loop(); }
           // ---------------------------------------------
@@ -409,7 +409,7 @@ void loop() {
           }     
     }
 
-    if (carril == 2) {
+    if (lane== 2) {
       Encoder_1.setTarPWM(velocidad);
       Encoder_1.loop();
 
