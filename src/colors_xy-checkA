@@ -1,0 +1,39 @@
+#include <MeMegaPi.h>
+#include <Pixy2.h>
+
+// Create Pixy object
+Pixy2 pixy;
+
+int signatureToCount = 2;  // Signature to count
+int X = 0 ;
+
+void setup() {
+  // Initialize Pixy
+  pixy.init();
+  pixy.setLamp(1, 1);  // Turn on the Pixy's LED lamp
+
+  // Initialize Serial communication for debugging
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Get blocks from Pixy
+  int blocks = pixy.ccc.getBlocks();
+
+  // Check if any blocks are found
+  if (blocks) {
+    for (int i = 0; i < blocks; i++) {
+      // Check if the detected block has the desired signature
+      if (pixy.ccc.blocks[i].m_signature == signatureToCount) {
+        X = pixy.ccc.blocks[i].m_x;
+        // Print the count and position of the detected signature
+        Serial.print(" X: ");
+        Serial.print(X);
+        Serial.print(" Y: ");
+        Serial.println(pixy.ccc.blocks[i].m_y);
+      }
+    }
+  }
+
+  // You can add more code here or use the count variable as needed
+}
