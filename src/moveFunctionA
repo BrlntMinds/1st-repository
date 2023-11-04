@@ -1,0 +1,14 @@
+#include <MeAuriga.h>
+
+MeEncoderOnBoard Encoder_1 (SLOT1);
+
+
+
+void setup() {
+  
+}
+
+void loop() {
+  Encoder_1.setTarPWM(-100/100.0*255);
+  Encoder_1.loop();
+}
