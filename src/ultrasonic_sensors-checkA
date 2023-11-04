@@ -1,0 +1,30 @@
+#include <MeAuriga.h>
+
+MeUltrasonicSensor ultrasonic_7(7); // left
+MeUltrasonicSensor ultrasonic_8(8); // right
+MeUltrasonicSensor ultrasonic_9(9); // front
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+   
+  int dd = ultrasonic_8.distanceCm(); //right distance
+  int di = ultrasonic_7.distanceCm(); //left distance
+  int da = ultrasonic_9.distanceCm(); //front distance 
+
+  delay(100);
+
+    Serial.print("DD: ");
+    Serial.print(dd);
+    Serial.println(" cm");
+
+    Serial.print("DI: ");
+    Serial.print(di);
+    Serial.println(" cm");
+
+    Serial.print("DA: ");
+    Serial.print(da);
+    Serial.println(" cm");
+}
