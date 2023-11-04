@@ -1,0 +1,17 @@
+#include <MeAuriga.h>
+
+Servo servo_6_1;
+MePort port_6(6);
+
+// derecha = 135
+// centro = 95
+// izquierda = 55
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  servo_6_1.attach(port_6.pin1());
+  servo_6_1.write(20);
+}
